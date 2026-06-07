@@ -21,6 +21,21 @@ import { DEFAULT_PROBLEMS } from "./defaultProblems.js";
 dotenv.config({ path: path.join(process.cwd(), ".env.local") });
 dotenv.config();
 
+// Guard: fail fast with a clear message if Firebase env vars are not set
+const requiredEnvVars = [
+  "FIREBASE_API_KEY",
+  "FIREBASE_AUTH_DOMAIN",
+  "FIREBASE_PROJECT_ID",
+  "FIREBASE_APP_ID",
+];
+const missingVars = requiredEnvVars.filter((v) => !process.env[v]);
+if (missingVars.length > 0) {
+  throw new Error(
+    `Missing required Firebase environment variables: ${missingVars.join(", ")}. ` +
+    `Set these in Vercel Project Settings → Environment Variables.`
+  );
+}
+
 // Build Firebase config from environment variables.
 // On Vercel, set these in Project Settings → Environment Variables.
 // Locally, put them in .env.local
@@ -37,6 +52,7 @@ const firestoreDatabaseId = process.env.FIREBASE_DATABASE_ID || "(default)";
 // Avoid re-initializing on hot reloads (Next.js / Vercel serverless)
 const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
 export const db = getFirestore(app, firestoreDatabaseId);
+
 
 // Deterministic hash function to map access codes to standard positive integer IDs
 export function getHashCode(str: string): number {
