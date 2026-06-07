@@ -1,7 +1,6 @@
 import dotenv from "dotenv";
-import fs from "fs";
 import path from "path";
-import { initializeApp } from "firebase/app";
+import { initializeApp, getApps, getApp } from "firebase/app";
 import {
   getFirestore,
   collection,
@@ -18,16 +17,26 @@ import {
 import { GoogleGenAI } from "@google/genai";
 import { DEFAULT_PROBLEMS } from "./defaultProblems.js";
 
-// Load environment variables
+// Load environment variables (local dev only; Vercel injects these automatically)
 dotenv.config({ path: path.join(process.cwd(), ".env.local") });
 dotenv.config();
 
-// Load configuration safely from the root file
-const configPath = path.join(process.cwd(), "firebase-applet-config.json");
-const firebaseConfig = JSON.parse(fs.readFileSync(configPath, "utf-8"));
+// Build Firebase config from environment variables.
+// On Vercel, set these in Project Settings → Environment Variables.
+// Locally, put them in .env.local
+const firebaseConfig = {
+  apiKey: process.env.FIREBASE_API_KEY,
+  authDomain: process.env.FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.FIREBASE_PROJECT_ID,
+  storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.FIREBASE_APP_ID,
+};
+const firestoreDatabaseId = process.env.FIREBASE_DATABASE_ID || "(default)";
 
-const app = initializeApp(firebaseConfig);
-export const db = getFirestore(app, firebaseConfig.firestoreDatabaseId);
+// Avoid re-initializing on hot reloads (Next.js / Vercel serverless)
+const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
+export const db = getFirestore(app, firestoreDatabaseId);
 
 // Deterministic hash function to map access codes to standard positive integer IDs
 export function getHashCode(str: string): number {
