@@ -1,0 +1,35 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Default-deny safety net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // User profiles and child subcollections
+    match /users/{userId} {
+      allow read, write: if true;
+
+      // User progress subcollection
+      match /progress/{problemId} {
+        allow read, write: if true;
+      }
+
+      // User custom questions subcollection
+      match /custom_questions/{leetcodeNumber} {
+        allow read, write: if true;
+      }
+    }
+    
+    // Test collection for initial validation check
+    match /test/{docId} {
+      allow read, write: if true;
+    }
+
+    // Cache collection for AI problem details
+    match /problem_details/{leetcodeNumber} {
+      allow read, write: if true;
+    }
+  }
+}

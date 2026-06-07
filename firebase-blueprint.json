@@ -1,0 +1,121 @@
+{
+  "entities": {
+    "User": {
+      "title": "User Profile",
+      "description": "User profile with access credential token",
+      "type": "object",
+      "properties": {
+        "accessCode": {
+          "type": "string",
+          "description": "Unique uppercase alphanumeric security token"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp of profile creation"
+        }
+      },
+      "required": ["accessCode", "createdAt"]
+    },
+    "Progress": {
+      "title": "Problem Progress",
+      "description": "Completion status records for standard or custom DSA problems",
+      "type": "object",
+      "properties": {
+        "isCompleted": {
+          "type": "boolean",
+          "description": "Whether the problem has been solved"
+        },
+        "completedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp of completion"
+        }
+      },
+      "required": ["isCompleted", "completedAt"]
+    },
+    "CustomQuestion": {
+      "title": "Custom Question",
+      "description": "User-added custom DSA question metadata",
+      "type": "object",
+      "properties": {
+        "leetcodeNumber": {
+          "type": "string",
+          "description": "Leetcode question number or custom unique ID"
+        },
+        "title": {
+          "type": "string",
+          "description": "Title of the problem"
+        },
+        "description": {
+          "type": "string",
+          "description": "Full description and notes"
+        },
+        "difficulty": {
+          "type": "string",
+          "enum": ["Easy", "Medium", "Hard"],
+          "description": "Difficulty rating"
+        },
+        "category": {
+          "type": "string",
+          "description": "Category tag like Arrays, Trees, etc."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp of custom question creation"
+        }
+      },
+      "required": ["leetcodeNumber", "title", "description", "difficulty", "category", "createdAt"]
+    },
+    "ProblemDetail": {
+      "title": "Problem Detail Cache",
+      "description": "Cached topic and company details for standard/custom LeetCode questions",
+      "type": "object",
+      "properties": {
+        "leetcodeNumber": {
+          "type": "string",
+          "description": "Leetcode question number or custom unique ID"
+        },
+        "title": {
+          "type": "string",
+          "description": "Title of the problem"
+        },
+        "topics": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "List of sub-topics covered"
+        },
+        "companies": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "List of asking companies"
+        },
+        "generatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp of details generation"
+        }
+      },
+      "required": ["leetcodeNumber", "title", "topics", "companies", "generatedAt"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "Contains system-authenticated profiles"
+    },
+    "/users/{userId}/progress/{problemId}": {
+      "schema": "Progress",
+      "description": "Completion checklist details under specific user profile"
+    },
+    "/users/{userId}/custom_questions/{leetcodeNumber}": {
+      "schema": "CustomQuestion",
+      "description": "Custom questions created by a specific user"
+    },
+    "/problem_details/{leetcodeNumber}": {
+      "schema": "ProblemDetail",
+      "description": "Cached problem details (topics & companies) fetched via Gemini API"
+    }
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "name": "DSA Tracker",
+  "description": "A minimal, highly aesthetic Data Structures and Algorithms (DSA) progression tracker with a comprehensive roadmap of foundational problems, progress analytics, and custom question uploads.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
